@@ -76,5 +76,5 @@ Install tools, caches and downloads under `D:\SCD-Tools`, never on `C:`.
 | Ollama | `D:\SCD-Tools\Ollama`; models `qwen2.5:1.5b`, `llama3.2:3b`, `nomic-embed-text` |
 | WSL | `Ubuntu-24.04` in `D:\SCD-Tools\WSL` |
 
-Start and stop with `scripts/lab.ps1` (`dev`, `cluster`, `delivery`, `stop`, `status`). Other minikube profiles and Docker images on this machine belong
+Start and stop with `scripts/lab.ps1` (`dev`, `cluster`, `stop`, `status`). Other minikube profiles and Docker images on this machine belong
 to other work: do not delete or prune them.

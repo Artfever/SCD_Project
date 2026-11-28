@@ -1,0 +1,9 @@
+# Keeps the namespace inside the laptop memory budget (docs/resource-budget.md)
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: memory-budget
+spec:
+  hard:
+    requests.memory: 7Gi
+    limits.memory: 11Gi
