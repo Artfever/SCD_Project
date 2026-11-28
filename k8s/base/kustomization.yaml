@@ -19,6 +19,7 @@ resources:
   - quota.yaml
   - redis.yaml
   - data-volume.yaml
+  - ingestion-cronjob.yaml
   - scorer.yaml
   - scout-cronjobs.yaml
   - scouts.yaml

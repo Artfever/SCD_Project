@@ -6,9 +6,11 @@ cd "$(dirname "$0")/.."
 tag=${1:?usage: build_images.sh <tag> [service ...]}
 shift
 if [ "$#" -eq 0 ]; then
-  set -- $(for f in services/*/Dockerfile; do basename "$(dirname "$f")"; done)
+  set -- $(for f in services/*/Dockerfile jobs/*/Dockerfile; do basename "$(dirname "$f")"; done)
 fi
-for service in "$@"; do
-  echo "== build scd/${service}:${tag}"
-  docker build --quiet -t "scd/${service}:${tag}" "services/${service}"
+for name in "$@"; do
+  dir="services/${name}"
+  [ -d "$dir" ] || dir="jobs/${name}"
+  echo "== build scd/${name}:${tag}"
+  docker build --quiet -t "scd/${name}:${tag}" "$dir"
 done

@@ -83,13 +83,13 @@ jobs:
   discover-images:
     runs-on: ubuntu-latest
     outputs:
-      services: ${{ steps.list.outputs.services }}
+      dirs: ${{ steps.list.outputs.dirs }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - id: list
         run: |
-          services=$(for f in services/*/Dockerfile; do basename "$(dirname "$f")"; done | jq -R . | jq -cs .)
-          echo "services=$services" >> "$GITHUB_OUTPUT"
+          dirs=$(for f in services/*/Dockerfile jobs/*/Dockerfile; do dirname "$f"; done | jq -R . | jq -cs .)
+          echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
 
   image:
     needs: discover-images
@@ -97,18 +97,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: ${{ fromJSON(needs.discover-images.outputs.services) }}
+        dir: ${{ fromJSON(needs.discover-images.outputs.dirs) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build
         env:
-          SERVICE: ${{ matrix.service }}
-        run: docker build -t "scd/$SERVICE:$GITHUB_SHA" "services/$SERVICE"
+          DIR: ${{ matrix.dir }}
+        run: docker build -t "scd/image:$GITHUB_SHA" "$DIR"
       - name: Scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           version: v0.76.2
-          image-ref: scd/${{ matrix.service }}:${{ github.sha }}
+          image-ref: scd/image:${{ github.sha }}
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: "1"

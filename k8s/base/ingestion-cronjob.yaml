@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ingestion
+spec:
+  # Half an hour after the scouts start
+  schedule: "30 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels: { app: ingestion }
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            fsGroup: 10001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: ingestion
+              image: scd/ingestion:dev
+              imagePullPolicy: IfNotPresent
+              env:
+                - { name: KB_URL, value: "http://kb:8000" }
+              resources:
+                requests: { cpu: 100m, memory: 192Mi }
+                limits: { cpu: 500m, memory: 512Mi }
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+          volumes:
+            - name: data
+              persistentVolumeClaim: { claimName: scd-data }
