@@ -1,0 +1,9 @@
+# Raw snapshots written by the scouts and read by ingestion
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scd-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: { storage: 1Gi }

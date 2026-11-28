@@ -47,6 +47,9 @@ services:
     profiles: [app]
     build: ./services/scouts
     mem_limit: 256m
+    environment:
+      TOOLS_URL: http://tools:8000
+    volumes: [scd-data:/data]
 
   tools:
     profiles: [app]
@@ -95,3 +98,4 @@ services:
 
 volumes:
   postgres-data:
+  scd-data:

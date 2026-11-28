@@ -1,0 +1,125 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scout-hackernews
+spec:
+  schedule: "0 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels: { app: scouts }
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            fsGroup: 10001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: scout
+              image: scd/scouts:dev
+              imagePullPolicy: IfNotPresent
+              command: [python, -m, src.cli]
+              args: ["--source", "hackernews", "--months", "2", "--pages", "3"]
+              resources:
+                requests: { cpu: 50m, memory: 96Mi }
+                limits: { cpu: 300m, memory: 192Mi }
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+          volumes:
+            - name: data
+              persistentVolumeClaim: { claimName: scd-data }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scout-github
+spec:
+  schedule: "20 */12 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels: { app: scouts }
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            fsGroup: 10001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: scout
+              image: scd/scouts:dev
+              imagePullPolicy: IfNotPresent
+              command: [python, -m, src.cli]
+              args: ["--source", "github", "--months", "2", "--pages", "1"]
+              resources:
+                requests: { cpu: 50m, memory: 96Mi }
+                limits: { cpu: 300m, memory: 192Mi }
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+          volumes:
+            - name: data
+              persistentVolumeClaim: { claimName: scd-data }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scout-devto
+spec:
+  schedule: "40 */12 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels: { app: scouts }
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            fsGroup: 10001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: scout
+              image: scd/scouts:dev
+              imagePullPolicy: IfNotPresent
+              command: [python, -m, src.cli]
+              args: ["--source", "devto", "--months", "2", "--pages", "2"]
+              resources:
+                requests: { cpu: 50m, memory: 96Mi }
+                limits: { cpu: 300m, memory: 192Mi }
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: { drop: [ALL] }
+              volumeMounts:
+                - { name: data, mountPath: /data }
+          volumes:
+            - name: data
+              persistentVolumeClaim: { claimName: scd-data }

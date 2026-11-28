@@ -18,7 +18,9 @@ resources:
   - profile.yaml
   - quota.yaml
   - redis.yaml
+  - data-volume.yaml
   - scorer.yaml
+  - scout-cronjobs.yaml
   - scouts.yaml
   - tools.yaml
   - ui.yaml

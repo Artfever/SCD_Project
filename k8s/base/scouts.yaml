@@ -18,12 +18,15 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001
+        fsGroup: 10001
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: scouts
           image: scd/scouts:dev
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 8000 }]
+          volumeMounts:
+            - { name: data, mountPath: /data }
           readinessProbe:
             httpGet: { path: /ready, port: 8000 }
             periodSeconds: 5
@@ -37,6 +40,9 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             capabilities: { drop: [ALL] }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: scd-data }
 ---
 apiVersion: v1
 kind: Service
