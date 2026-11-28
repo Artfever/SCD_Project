@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 tag=${1:?usage: load_images.sh <tag>}
 profile=${MINIKUBE_PROFILE:-scd-project}
-for f in services/*/Dockerfile; do
+for f in services/*/Dockerfile jobs/*/Dockerfile; do
   service=$(basename "$(dirname "$f")")
   echo "== load scd/${service}:${tag}"
   minikube -p "$profile" image load "scd/${service}:${tag}"

@@ -105,6 +105,15 @@ services:
     build: ./services/agentops
     mem_limit: 256m
 
+  ingestion:
+    profiles: [jobs]
+    build: ./jobs/ingestion
+    mem_limit: 512m
+    environment:
+      KB_URL: http://kb:8000
+    volumes: [scd-data:/data]
+    depends_on: [kb]
+
 volumes:
   postgres-data:
   scd-data:

@@ -11,6 +11,7 @@ from src.models import (
     Evidence,
     IngestionRun,
     SearchRequest,
+    SourceRef,
     SourceStats,
     Stats,
     UpsertResult,
@@ -54,7 +55,8 @@ LIMIT %(limit)s
 
 def content_hash(card: CardWithChunks) -> str:
     # fetched_at changes on every run and must not count as a change
-    return hashlib.sha256(card.model_dump_json(exclude={"fetched_at"}).encode()).hexdigest()
+    exclude: Any = {"fetched_at": True, "also_seen": {"__all__": {"fetched_at"}}}
+    return hashlib.sha256(card.model_dump_json(exclude=exclude).encode()).hexdigest()
 
 
 def search_parameters(request: SearchRequest, limit: int) -> dict[str, Any]:
@@ -107,7 +109,8 @@ class Repository:
                 else:
                     result.added += old is None
                     result.updated += old is not None
-                    values = card.model_dump(exclude={"chunks"}) | {"content_hash": digest}
+                    values = card.model_dump(exclude={"chunks", "also_seen"})
+                    values["content_hash"] = digest
                     connection.execute(UPSERT_CARD.encode(), values)
                     connection.execute("DELETE FROM chunks WHERE card_id = %s", (card.id,))
                     for position, text in enumerate(card.chunks):
@@ -116,12 +119,14 @@ class Repository:
                             "VALUES (%s, %s, %s, %s)",
                             (f"{card.id}#c{position}", card.id, position, text),
                         )
-                connection.execute(
-                    "INSERT INTO card_sources (card_id, platform, url, fetched_at) "
-                    "VALUES (%s, %s, %s, %s) ON CONFLICT (card_id, platform, url) "
-                    "DO UPDATE SET fetched_at = EXCLUDED.fetched_at",
-                    (card.id, card.source, card.url, card.fetched_at),
-                )
+                primary = SourceRef(source=card.source, url=card.url, fetched_at=card.fetched_at)
+                for seen in [primary, *card.also_seen]:
+                    connection.execute(
+                        "INSERT INTO card_sources (card_id, platform, url, fetched_at) "
+                        "VALUES (%s, %s, %s, %s) ON CONFLICT (card_id, platform, url) "
+                        "DO UPDATE SET fetched_at = EXCLUDED.fetched_at",
+                        (card.id, seen.source, seen.url, seen.fetched_at),
+                    )
         return result
 
     def get(self, card_id: str) -> Card | None:

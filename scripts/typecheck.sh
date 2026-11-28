@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PYTHON=${PYTHON:-python}
-for dir in services/*/; do
+for dir in services/*/ jobs/*/; do
   [ -d "${dir}src" ] || continue
   echo "== mypy ${dir}"
   (cd "$dir" && "$PYTHON" -m mypy --config-file ../../pyproject.toml src tests)

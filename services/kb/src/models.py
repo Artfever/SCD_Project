@@ -21,8 +21,15 @@ class Card(BaseModel):
     text: str = Field(default="", max_length=20_000)
 
 
+class SourceRef(BaseModel):
+    source: str = Field(min_length=1, max_length=40)
+    url: str = Field(pattern=r"^https?://", max_length=2000)
+    fetched_at: datetime
+
+
 class CardWithChunks(Card):
     chunks: list[str] = Field(min_length=1, max_length=50)
+    also_seen: list[SourceRef] = Field(default=[], max_length=50)
 
 
 class CardBatch(BaseModel):

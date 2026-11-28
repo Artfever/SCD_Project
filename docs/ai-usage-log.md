@@ -12,3 +12,4 @@ changed afterwards and why.
 | 2026-11-28 | Claude Code | Tool layer M5 (#9): code and tests | Not yet reviewed | |
 | 2026-11-28 | Claude Code | Scouts M4 (#13): connectors, CronJobs and tests | Not yet reviewed | |
 | 2026-11-28 | Claude Code | Knowledge base M6 (#8): schema, search API, seed cards, tests | Not yet reviewed | |
+| 2026-11-28 | Claude Code | Ingestion M6i (#14): job, tests, collected snapshot of 9,251 cards | Not yet reviewed | |

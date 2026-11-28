@@ -64,3 +64,12 @@ def test_card_lookup_and_ingestion_run(repository: Repository) -> None:
     run = {"run_id": "r1", "source": "github", "added": 3, "dropped": 1}
     assert client.post("/ingestion-runs", json=run).status_code == 204
     assert client.post("/ingestion-runs", json=run).status_code == 204
+
+
+def test_every_sighting_is_kept(repository: Repository) -> None:
+    card = load_fixture()[0]
+    other = {"source": "devto", "url": "https://example.com/other", "fetched_at": card.fetched_at}
+    repository.upsert([card.model_validate(card.model_dump() | {"also_seen": [other]})])
+    with repository.database.connect() as connection:
+        rows = connection.execute("SELECT platform FROM card_sources ORDER BY platform").fetchall()
+    assert [row["platform"] for row in rows] == ["devto", "hackernews"]
