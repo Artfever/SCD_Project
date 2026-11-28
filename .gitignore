@@ -45,6 +45,7 @@ checkpoints/
 
 # Local runtime data
 /traces/
+/data/
 .trivycache/
 *.sqlite3
 *.db

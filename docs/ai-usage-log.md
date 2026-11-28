@@ -10,3 +10,4 @@ changed afterwards and why.
 | 2026-11-28 | Claude Code | Repository structure: service skeletons, Dockerfiles, Kubernetes manifests, network policies, CI workflow, scripts, Compose file, Jenkinsfile, `config/verdict.yaml` | Not yet reviewed | |
 | 2026-11-28 | Claude Code | README, work plan, memory budget, proposed decision records, issues, milestones, repository settings | Not yet reviewed | |
 | 2026-11-28 | Claude Code | Tool layer M5 (#9): code and tests | Not yet reviewed | |
+| 2026-11-28 | Claude Code | Scouts M4 (#13): connectors, CronJobs and tests | Not yet reviewed | |
