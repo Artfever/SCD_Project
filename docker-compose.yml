@@ -1,0 +1,97 @@
+# Local development only. The deployment target is Kubernetes (k8s/).
+# `docker compose up -d postgres redis` for data services, `--profile app up --build` for everything.
+name: scd
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17@sha256:b513c48566e4777cd3370451400000c78eda6a08131d68f4c31d4a76f27bd8fd
+    environment:
+      POSTGRES_DB: scd
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set a password}
+    ports: ["127.0.0.1:${POSTGRES_PORT:-5433}:5432"]
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD, pg_isready, -U, postgres, -d, scd]
+      interval: 5s
+    mem_limit: 512m
+
+  redis:
+    image: redis:7.4-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe
+    command: [redis-server, --save, "", --maxmemory, 96mb, --maxmemory-policy, allkeys-lru]
+    ports: ["127.0.0.1:6379:6379"]
+    mem_limit: 128m
+
+  ui:
+    profiles: [app]
+    build: ./services/ui
+    ports: ["127.0.0.1:8080:8080"]
+    mem_limit: 64m
+
+  gateway:
+    profiles: [app]
+    build: ./services/gateway
+    mem_limit: 256m
+    ports: ["127.0.0.1:8000:8000"]
+
+  profile:
+    profiles: [app]
+    build: ./services/profile
+    mem_limit: 256m
+
+  orchestrator:
+    profiles: [app]
+    build: ./services/orchestrator
+    mem_limit: 256m
+
+  scouts:
+    profiles: [app]
+    build: ./services/scouts
+    mem_limit: 256m
+
+  tools:
+    profiles: [app]
+    build: ./services/tools
+    mem_limit: 256m
+
+  kb:
+    profiles: [app]
+    build: ./services/kb
+    mem_limit: 1g
+
+  analyst:
+    profiles: [app]
+    build: ./services/analyst
+    mem_limit: 768m
+
+  ideation:
+    profiles: [app]
+    build: ./services/ideation
+    mem_limit: 256m
+
+  validators:
+    profiles: [app]
+    build: ./services/validators
+    mem_limit: 256m
+
+  scorer:
+    profiles: [app]
+    build: ./services/scorer
+    mem_limit: 2g
+
+  verdict:
+    profiles: [app]
+    build: ./services/verdict
+    mem_limit: 256m
+
+  critic:
+    profiles: [app]
+    build: ./services/critic
+    mem_limit: 256m
+
+  agentops:
+    profiles: [app]
+    build: ./services/agentops
+    mem_limit: 256m
+
+volumes:
+  postgres-data:
