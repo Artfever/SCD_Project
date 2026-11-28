@@ -10,6 +10,7 @@ RUN useradd --system --uid 10001 --no-create-home app
 WORKDIR /app
 COPY --from=build /install /usr/local
 COPY src/ ./src/
+COPY fixtures/ ./fixtures/
 USER 10001
 EXPOSE 8000
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
