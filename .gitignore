@@ -1,0 +1,56 @@
+# Course documents: local only, never push
+Project.pdf
+Project_Guide.pdf
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kubeconfig
+kubeconfig.*
+**/secrets.local.*
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+
+# Node / UI
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Model weights and large artefacts (use a release asset or registry)
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+checkpoints/
+
+# Local runtime data
+/traces/
+.trivycache/
+*.sqlite3
+*.db
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
