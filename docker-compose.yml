@@ -60,6 +60,15 @@ services:
     profiles: [app]
     build: ./services/kb
     mem_limit: 1g
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGDATABASE: scd
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports: ["127.0.0.1:8001:8000"]
 
   analyst:
     profiles: [app]
